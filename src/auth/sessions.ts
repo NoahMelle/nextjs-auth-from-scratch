@@ -11,7 +11,7 @@ import { redirect } from "next/navigation";
 import crypto from "crypto";
 
 export async function generateSessionToken(): Promise<string> {
-  return crypto.randomBytes(512).toString("hex");
+  return crypto.randomBytes(64).toString("hex");
 }
 
 export async function verifySessionToken(token: string): Promise<boolean> {
@@ -35,7 +35,11 @@ export async function getServerSession() {
 
   const token = cookieStore.get("session_id");
 
+  console.log(token);
+
   if (!token?.value) {
+    console.log("no token found");
+
     redirect("/login");
   }
 
@@ -50,6 +54,10 @@ export async function getServerSession() {
       },
     },
   });
+
+  if (!session) {
+    redirect("/login");
+  }
 
   return session;
 }

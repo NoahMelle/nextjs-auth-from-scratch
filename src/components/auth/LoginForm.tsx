@@ -22,6 +22,8 @@ export default function LoginForm() {
         <input type="password" defaultValue={state.password} name="password" />
       </label>
       <p>{state.errors?.fieldErrors.password}</p>
+
+      <input type="submit" value="Submit" />
     </form>
   );
 }

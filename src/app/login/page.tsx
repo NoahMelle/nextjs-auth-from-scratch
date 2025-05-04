@@ -1,6 +1,6 @@
-import SignUpForm from "@/components/auth/SignUpForm";
+import LoginForm from "@/components/auth/LoginForm";
 import React from "react";
 
 export default function Login() {
-  return <SignUpForm />;
+  return <LoginForm />;
 }
