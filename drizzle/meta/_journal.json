@@ -15,6 +15,20 @@
       "when": 1746379395225,
       "tag": "0001_certain_black_bird",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1746433565783,
+      "tag": "0002_melted_garia",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1746433645306,
+      "tag": "0003_violet_korg",
+      "breakpoints": true
     }
   ]
 }

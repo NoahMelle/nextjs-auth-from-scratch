@@ -1,0 +1,1 @@
+ALTER TABLE `sessions_table` ADD `expiredAt` timestamp;

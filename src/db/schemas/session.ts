@@ -1,6 +1,13 @@
 import { relations } from "drizzle-orm";
-import { int, mysqlTable, timestamp, varchar } from "drizzle-orm/mysql-core";
+import {
+  boolean,
+  int,
+  mysqlTable,
+  timestamp,
+  varchar,
+} from "drizzle-orm/mysql-core";
 import { usersTable } from "./user";
+import dayjs from "dayjs";
 
 export const sessionsTable = mysqlTable("sessions_table", {
   id: int().primaryKey().autoincrement(),
@@ -9,7 +16,12 @@ export const sessionsTable = mysqlTable("sessions_table", {
     .notNull()
     .references(() => usersTable.id, { onDelete: "cascade" }),
 
-  createdAt: timestamp().defaultNow(),
+  valid: boolean().default(true),
+
+  createdAt: timestamp("created_at").defaultNow(),
+  expiresAt: timestamp("expires_at").$defaultFn(() =>
+    dayjs().add(7, "day").toDate()
+  ),
 });
 
 export const sessionsRelations = relations(sessionsTable, ({ one }) => ({

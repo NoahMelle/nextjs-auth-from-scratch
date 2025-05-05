@@ -11,16 +11,16 @@ export const env = createEnv({
           .string()
           .url()
           .optional()
-          .default("mysql://root:password@localhost:3306/pedal_planner")
+          .default("mysql://root:password@localhost:3306/auth_from_scratch")
       : z.string().url(),
-    SESSION_SECRET: isCI
-      ? z.string().optional().default("placeholder_value")
-      : z.string().min(30),
+    BASE_URL: isCI
+      ? z.string().url().optional().default("http://localhost:3000")
+      : z.string().url(),
   },
 
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
-    SESSION_SECRET: process.env.SESSION_SECRET,
+    BASE_URL: process.env.BASE_URL,
   },
 });

@@ -4,11 +4,12 @@ import { db } from "@/db";
 import { sessionsTable, usersTable } from "@/db/schemas";
 import { registerSchema, signinSchema } from "@/lib/schemas";
 import bcrypt from "bcrypt";
-import { eq } from "drizzle-orm";
+import { and, eq, gte } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { LoginFormStateType, SignUpFormStateType } from "./types";
 import { redirect } from "next/navigation";
 import crypto from "crypto";
+import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 
 export async function generateSessionToken(): Promise<string> {
   return crypto.randomBytes(64).toString("hex");
@@ -30,21 +31,19 @@ export async function verifySessionToken(token: string): Promise<boolean> {
   return !!session;
 }
 
-export async function getServerSession() {
-  const cookieStore = await cookies();
-
+export async function getServerSession(cookieStore: ReadonlyRequestCookies) {
   const token = cookieStore.get("session_id");
 
-  console.log(token);
-
   if (!token?.value) {
-    console.log("no token found");
-
     redirect("/login");
   }
 
   const session = await db.query.sessionsTable.findFirst({
-    where: eq(sessionsTable.sessionId, token?.value),
+    where: and(
+      eq(sessionsTable.sessionId, token?.value),
+      gte(sessionsTable.expiresAt, new Date()),
+      eq(sessionsTable.valid, true)
+    ),
     with: {
       user: {
         columns: {
@@ -56,7 +55,7 @@ export async function getServerSession() {
   });
 
   if (!session) {
-    redirect("/login");
+    redirect("/api/signout");
   }
 
   return session;
@@ -105,12 +104,14 @@ export async function login(
 }
 
 export async function register(
-  prevState: SignUpFormStateType,
+  _: SignUpFormStateType,
   formData: FormData
 ): Promise<SignUpFormStateType> {
+  // TODO: check for already existing email/username
+
   const password = formData.get("password") as string;
   const email = formData.get("email") as string;
-  const username = formData.get("email") as string;
+  const username = formData.get("username") as string;
 
   const parseRes = registerSchema.safeParse({
     password,
@@ -120,7 +121,9 @@ export async function register(
 
   if (!parseRes.success) {
     return {
-      ...prevState,
+      username,
+      password,
+      email,
       errors: parseRes.error.flatten(),
     };
   }
@@ -143,7 +146,30 @@ export async function register(
   cookieStore.set("session_id", sessionId);
 
   return {
-    ...prevState,
+    username,
+    password,
+    email,
     errors: undefined,
   };
+}
+
+export async function invalidateSession(withRedirect = false) {
+  const cookieStore = await cookies();
+
+  const sessionId = cookieStore.get("session_id");
+
+  if (sessionId) {
+    await db
+      .update(sessionsTable)
+      .set({
+        valid: false,
+      })
+      .where(eq(sessionsTable.sessionId, sessionId.value));
+  }
+
+  cookieStore.delete("session_id");
+
+  if (withRedirect) {
+    redirect("/login");
+  }
 }
