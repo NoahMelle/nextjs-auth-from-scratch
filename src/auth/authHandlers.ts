@@ -6,14 +6,16 @@ import { db } from "@/db";
 import { eq, or } from "drizzle-orm";
 import { usersTable } from "@/db/schemas";
 import { generateUserSession } from "./sessions";
-import { cookies } from "next/headers";
 import bcrypt from "bcrypt";
 import { redirect } from "next/navigation";
+import { getSession } from "./ironSession";
 
 export async function login(
   _: LoginFormStateType,
   formData: FormData
 ): Promise<LoginFormStateType> {
+  const session = await getSession();
+
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
@@ -36,8 +38,9 @@ export async function login(
 
   const sessionId = await generateUserSession(user.id);
 
-  const cookieStore = await cookies();
-  cookieStore.set("session_id", sessionId);
+  session.sessionId = sessionId;
+
+  await session.save();
 
   redirect("/protected");
 }
@@ -46,6 +49,8 @@ export async function register(
   _: SignUpFormStateType,
   formData: FormData
 ): Promise<SignUpFormStateType> {
+  const session = await getSession();
+
   const password = formData.get("password") as string;
   const email = formData.get("email") as string;
   const username = formData.get("username") as string;
@@ -85,8 +90,6 @@ export async function register(
     };
   }
 
-  const cookieStore = await cookies();
-
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const [{ id }] = await db
@@ -100,7 +103,9 @@ export async function register(
 
   const sessionId = await generateUserSession(id);
 
-  cookieStore.set("session_id", sessionId);
+  session.sessionId = sessionId;
+
+  await session.save();
 
   return {
     username,

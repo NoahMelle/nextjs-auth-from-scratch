@@ -16,11 +16,15 @@ export const env = createEnv({
     BASE_URL: isCI
       ? z.string().url().optional().default("http://localhost:3000")
       : z.string().url(),
+    SESSION_SECRET: isCI
+      ? z.string().optional().default("placeholder_value")
+      : z.string().min(10),
   },
 
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
     BASE_URL: process.env.BASE_URL,
+    SESSION_SECRET: process.env.SESSION_SECRET,
   },
 });

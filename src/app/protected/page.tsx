@@ -1,12 +1,9 @@
 import { getServerSession } from "@/auth/sessions";
-import { cookies } from "next/headers";
 import Link from "next/link";
 import React from "react";
 
 export default async function Protected() {
-  const cookieStore = await cookies();
-
-  const { user } = await getServerSession(cookieStore);
+  const user = await getServerSession();
 
   return (
     <div className="flex min-h-screen w-full items-center justify-center">
