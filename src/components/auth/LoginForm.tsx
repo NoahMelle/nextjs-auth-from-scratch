@@ -1,9 +1,10 @@
 "use client";
 
-import { login } from "@/auth/sessions";
 import Link from "next/link";
 import React, { useActionState } from "react";
 import FormInput from "../reusable/FormInput";
+import { login } from "@/auth/authHandlers";
+import { nanoid } from "nanoid";
 
 export default function LoginForm() {
   const [state, formAction, pending] = useActionState(login, {
@@ -32,6 +33,14 @@ export default function LoginForm() {
         name="password"
       />
 
+      <div className="text-xs">
+        {state.errors?.formErrors.map((error) => (
+          <p className="text-red-500" key={nanoid()}>
+            {error}
+          </p>
+        ))}
+      </div>
+
       <input
         type="submit"
         value={pending ? "Loading..." : "Log in"}
@@ -40,6 +49,7 @@ export default function LoginForm() {
           pending ? "bg-slate-400" : "bg-slate-700 hover:bg-slate-800"
         } text-white w-full rounded-sm py-2 text-sm transition-colors`}
       />
+
       <p className="text-sm text-center">
         No account yet? Register{" "}
         <Link href={"/register"} className="text-blue-600">

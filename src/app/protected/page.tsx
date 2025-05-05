@@ -1,6 +1,6 @@
 import { getServerSession } from "@/auth/sessions";
-import SignOutButton from "@/components/auth/SignOutButton";
 import { cookies } from "next/headers";
+import Link from "next/link";
 import React from "react";
 
 export default async function Protected() {
@@ -20,7 +20,12 @@ export default async function Protected() {
           <span className="font-semibold">Email: </span>
           {user.email}
         </p>
-        <SignOutButton />
+        <Link
+          className={`bg-red-400 hover:bg-red-500 transition-colors cursor-pointer text-white py-1 px-2 rounded-sm text-sm font-semibold block w-fit`}
+          href={"/api/signout"}
+        >
+          Sign Out
+        </Link>
       </main>
     </div>
   );

@@ -13,7 +13,7 @@ export default function FormInput({ label, errors, ...props }: FormInputProps) {
         <span className="text-sm">{label}</span>
         <input
           {...props}
-          className="border-black/40 border-[1px] text-sm rounded-sm p-2"
+          className="border-black/10 border-[2px] text-sm rounded-md p-2 outline-none focus:ring-2 ring-offset-1 ring-slate-700"
         />
       </label>
       <div className="text-xs mt-1">

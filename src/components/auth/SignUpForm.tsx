@@ -1,9 +1,9 @@
 "use client";
 
-import { register } from "@/auth/sessions";
 import React, { useActionState } from "react";
 import FormInput from "../reusable/FormInput";
 import Link from "next/link";
+import { register } from "@/auth/authHandlers";
 
 export default function SignUpForm() {
   const [state, formAction, pending] = useActionState(register, {
