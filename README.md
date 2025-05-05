@@ -13,7 +13,7 @@ A simple Next.js application with Session auth.
 ## Prerequisites
 
 - Bun
-- Oh, and don't forget this
+- MySQL
 
 ## Installation
 
