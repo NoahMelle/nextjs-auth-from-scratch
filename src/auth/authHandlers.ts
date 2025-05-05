@@ -46,8 +46,6 @@ export async function register(
   _: SignUpFormStateType,
   formData: FormData
 ): Promise<SignUpFormStateType> {
-  // TODO: check for already existing email/username
-
   const password = formData.get("password") as string;
   const email = formData.get("email") as string;
   const username = formData.get("username") as string;

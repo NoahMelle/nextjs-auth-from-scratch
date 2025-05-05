@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js Auth From Scratch
 
-## Getting Started
+![Next JS](https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![Bun](https://img.shields.io/badge/Bun-%23000000.svg?style=for-the-badge&logo=bun&logoColor=white)
+![Zod](https://img.shields.io/badge/zod-%233068b7.svg?style=for-the-badge&logo=zod&logoColor=white)
+![MySQL](https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white)
 
-First, run the development server:
+⚠️ _Made for educational purposes only, don't actually use this lol_
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+A simple Next.js application with Session auth.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Prerequisites
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Bun
+- Oh, and don't forget this
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Installation
 
-## Learn More
+1. Install dependencies:
+   ```
+   $ bun i
+   ```
+2. Create a database (MySQL):
+   ```mysql
+   CREATE DATABASE auth_from_scratch;
+   ```
+3. Copy `.env.example`, rename it to `.env` and fill out the database URL:
+   ```
+   cp .env.example .env
+   ```
+4. Migrate the database:
+   ```
+   bunx drizzle-kit push
+   ```
+5. Run the development server:
+   ```
+   bun run dev
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+## How does it work?
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Creating the session
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+When a user logs in, the server checks for an email/password match, using the `bcrypt.compare` function. If there's a match, a session token is created (128 characters long). This session token will be set as a cookie. The session gets saved in the database, along with the user id.
 
-## Deploy on Vercel
+### Verirfying the session
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The server can check if the session is valid by searching for the session with the corresponding session id in the database. If there's no valid session, the server action removes the `session_id` cookie and redirects to `/login`
